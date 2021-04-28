@@ -45,11 +45,13 @@ plot(sales.mle$scores[, 1], sales.mle$scores[, 2], type = "n",
      xlab = 'Factor 1', ylab = 'Factor 2', main = '2D of FA')
 text(sales.mle$scores[, 1:2], row.names(sales))
 
+
 #2####
 library(robustbase)
 library(lme4)
 library(MVN)
 library(CCP)
+
 air <- read.table("Air_Pollution.txt", h = TRUE)
 air$PSI <- NULL
 pairs.panels(air, method = "pearson", ellipses = FALSE)
@@ -69,4 +71,32 @@ plot(scorex, scorey, type = "n")
 text(scorex, scorey, row.names(newair), cex = .6)
 
 
+#3#####
+library(ca)
+
+car <- matrix(c(37, 14, 51, 52, 15, 44,33, 15,
+                63, 6, 1, 8), nrow = 4, byrow=T)
+colnames(car) <- c("American",  "European", "Japanese")
+rownames(car) <- c("M", "MwK", "S", "SwK")
+ca.car <- ca(car, nd = 2)
+ca.car
+plot(ca.car)
+
+
+#4####
+library(plotrix)
+
+shop <- read.table("Internet_Shopping.txt")
+names(shop) <- paste("Q", c(1:19), sep = '')
+summary(shop)
+
+summary(mjca(shop, nd = 2, lambda = "indicator")) #11.3
+bca.shop <- mjca(shop, nd = 2, lambda = "Burt") #33.7
+summary(bca.shop) 
+summary(mjca(shop, nd = 2, lambda = "adjusted")) #62.6
+jca.shop <- mjca(shop, nd = 2, lambda = "JCA") #64
+summary(jca.shop)
+
+plot(bca.shop)
+plot(jca.shop)
 
