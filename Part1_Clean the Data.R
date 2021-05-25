@@ -25,14 +25,14 @@ Tidydata[, 9:16] <- MulAdj("v7", 8)
 Tidydata$v8[Origdata$v8 == 30000] <- NA
 Tidydata$v8[Origdata$v8 == 99998] <- NA
 Tidydata$v8[Origdata$v8 == 99999] <- 0
-hist(Tidydata$v8)
+#hist(Tidydata$v8)
 
 # V9 No Internet code 0, and o.w code NA.
 Tidydata$v9_1[Origdata$v9_2 == 98] <- NA
 Tidydata$v9_1[Origdata$v9_2 == 99] <- 0
 Tidydata$v9_2[Origdata$v9_2 == 98] <- NA
 Tidydata$v9_2[Origdata$v9_2 == 99] <- 0
-Tidydata$V9_3 = Tidydata$v9_1*60 + Tidydata$v9_2
+Tidydata$v9_3 = Tidydata$v9_1*60 + Tidydata$v9_2
 
 # V10_1~V10_12 Multichoice Adjustment.
 dummy <- MulAdj("v10", 12)
