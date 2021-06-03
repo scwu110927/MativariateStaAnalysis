@@ -20,15 +20,16 @@ Int.addic <- mydata[, (names(mydata) %in% keep)]
 
 ## Missing 
 miss.pct <- apply(is.na(Int.addic), 2, sum)/1517
-Int.addic <- Int.addic[, !(names(mydata) = "v23")]
+Int.addic <- Int.addic[, !(names(Int.addic) == "v23")]
+chisq.test(Int.addic$v23, Int.addic$v24)
+Int.addic <- na.omit(Int.addic)
 
 ## Response table
 table(Int.addic$v24)/length(Int.addic$v24)
-Int.addic <-
   
 ## Dealing with site variable: v33
 site <- table(Int.addic$v33, Int.addic$v24)/as.vector(table(Int.addic$v33))
-site.diff <- site[, 2]-site[, 1]
+site.diff <- site[, 2]
 km <- kmeans(site.diff, 3, 20)
 plot(site.diff, col = km$cluster)
 points(km$centers, col = 1:3, pch = 8)
@@ -57,43 +58,35 @@ fit1 <- bagging(v24 ~ ., data = Int.addic,
 fit1.pred <- predict.bagging(fit1, Int.addic)
 fit1.pred$confusion
 fit1.pred$error
-sum(fit1.pred$confusion[1, 2]+fit1.pred$confusion[2, 1])/sum(fit1.pred$confusion)
 
-
-fit2 <- bagging.cv(v24 ~ ., data = Int.addic, v = 10, mfinal = 20,
+fit2 <- bagging.cv(v24 ~ ., data = Int.addic, v = 10, mfinal = 20, 
                    control = rpart.control(minsplit = 1, minbucket = 1, cp = 0))
 fit2[-1]
 
 # Random Forest
 fit3 <- randomForest(v24 ~ ., data = Int.addic, importance = TRUE, 
-                     nodesize = 3, proximity = TRUE, na.action = na.omit)
+                     nodesize = 3, proximity = TRUE)
 print(fit3)
-fit4 <- randomForest(v24 ~ ., data = Int.addic, importance = TRUE, 
-                     nodesize = 6, proximity = TRUE, na.action = na.omit)
-print(fit4)
-Int.addic2 <- na.omit(Int.addic)
-fit5 <- rfcv(Int.addic2[, !(names(Int.addic2) == "v24")], Int.addic2$v24, 
+
+fit5 <- rfcv(Int.addic[, !(names(Int.addic) == "v24")], Int.addic$v24, 
              cv.fold = 10, step = 0.8)
 fit5$error.cv
 
 #Boosting
-fit6 <- boosting(v24 ~ ., data = Int.addic2, boos = F, mfinal = 20,
+fit6 <- boosting(v24 ~ ., data = Int.addic, boos = F, mfinal = 20,
                  control = rpart.control(minsplit = 1, minbucket = 1, cp = 0))
-fit6.pred <- predict.boosting(fit6, Int.addic2)  
+fit6.pred <- predict.boosting(fit6, Int.addic)  
 fit6.pred$confusion
   
-fit7 <- boosting.cv(v24 ~ ., data = Int.addic2, v = 10, mfinal = 20, boos = F,
+fit7 <- boosting.cv(v24 ~ ., data = Int.addic, v = 10, mfinal = 20, boos = F,
                    control = rpart.control(minsplit = 1, minbucket = 1, cp = 0))
 fit7[-1] 
 
-fit8 <- boosting.cv(v24 ~ ., data = Int.addic2, v = 10, mfinal = 20, boos = T,
+fit8 <- boosting.cv(v24 ~ ., data = Int.addic, v = 10, mfinal = 20, boos = T,
                     control = rpart.control(minsplit = 1, minbucket = 1, cp = 0))
 fit8[-1] 
 
-fit9 <- boosting.cv(v24 ~ ., data = Int.addic2, v = 10, mfinal = 20, boos = F,
-                    coeflearn = 'Zhu',
-                    control = rpart.control(minsplit = 1, minbucket = 1, cp = 0))
-fit9[-1] 
+
 
 
 
