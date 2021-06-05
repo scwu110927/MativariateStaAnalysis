@@ -20,9 +20,7 @@ Int.addic <- mydata[, (names(mydata) %in% keep)]
 
 ## Missing 
 miss.pct <- apply(is.na(Int.addic), 2, sum)/1517
-Int.addic <- Int.addic[, !(names(Int.addic) == "v23")]
 chisq.test(Int.addic$v23, Int.addic$v24)
-Int.addic <- na.omit(Int.addic)
 
 ## Response table
 table(Int.addic$v24)/length(Int.addic$v24)
@@ -42,15 +40,21 @@ Int.addic$v33 <- v33_1 - 100
 chisq.test(Int.addic$v33, Int.addic$v24)
 table(Int.addic$v33)
 
+
 # Define factor
 Int.addic$v24 <- factor(Int.addic$v24)
-Int.addic$v23 <- factor(Int.addic$v23)
 Int.addic$v37 <- factor(Int.addic$v37)
 Int.addic$v1  <- factor(Int.addic$v1)
 Int.addic$v31 <- factor(Int.addic$v31)
 Int.addic$v32 <- factor(Int.addic$v32)
 Int.addic$v33 <- factor(Int.addic$v33)
 Int.addic$v36 <- factor(Int.addic$v36)
+
+
+# Missing delete
+Int.addic <- Int.addic[, !(names(Int.addic) == "v23")]
+Int.addic <- na.omit(Int.addic)
+
 
 # Bagging
 fit1 <- bagging(v24 ~ ., data = Int.addic,
@@ -64,12 +68,12 @@ fit2 <- bagging.cv(v24 ~ ., data = Int.addic, v = 10, mfinal = 20,
 fit2[-1]
 
 # Random Forest
-fit3 <- randomForest(v24 ~ ., data = Int.addic, importance = TRUE, 
-                     nodesize = 3, proximity = TRUE)
+fit3 <- randomForest(v24 ~ ., data = Int.addic, importance = TRUE,
+                     proximity = TRUE)
 print(fit3)
 
 fit5 <- rfcv(Int.addic[, !(names(Int.addic) == "v24")], Int.addic$v24, 
-             cv.fold = 10, step = 0.8)
+             cv.fold = 10, step = 0.9)
 fit5$error.cv
 
 #Boosting
